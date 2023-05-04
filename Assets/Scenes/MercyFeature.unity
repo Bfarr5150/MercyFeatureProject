@@ -750,7 +750,19 @@ MonoBehaviour:
     m_ActionId: 0bdfba11-b853-4aad-8601-5d5af9e5635f
     m_ActionName: Player/Jump[/Keyboard/space]
   - m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 2108951132}
+        m_TargetAssemblyTypeName: PlayerController, Assembly-CSharp
+        m_MethodName: OnGuardianAngel
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
     m_ActionId: 18d7fe40-59cb-468d-a699-6a05cf739350
     m_ActionName: Player/GuardianAngel[/Keyboard/shift]
   - m_PersistentCalls:
@@ -876,8 +888,8 @@ MonoBehaviour:
   camSense: 0.1
   maxVelocity: 3
   jumpVelocity: 3
-  GASpeed: 3
+  GASpeed: 6
   SuperJumpSpeed: 0
-  GAEndThreshold: 0.5
+  GAEndThreshold: 1
   allyInViewThreshold: 30
   allyInRangeThreshold: 10

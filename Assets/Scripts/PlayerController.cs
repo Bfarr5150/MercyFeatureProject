@@ -44,14 +44,6 @@ public class PlayerController : MonoBehaviour
     private void FixedUpdate()
     {
         Move();
-        if (allyInFOV() == true)
-        {
-            Debug.Log("Ally is in view");
-        }
-        if (allyInRange() == true)
-        {
-            Debug.Log("Ally is in range");
-        }
         
         // Check if player is currently flying
         if (GAActive)
