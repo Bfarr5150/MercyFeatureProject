@@ -9,9 +9,28 @@ public class PlayerController : MonoBehaviour
     
     public Rigidbody rb;
     public GameObject camHolder;
-    public float speed, camSense, maxVelocity;
-    private Vector2 move, look;
+    public float speed, camSense, maxVelocity, jumpVelocity, GAVelocity, superJumpVel;
+    private Vector2 move, look, jump, guardianAngel, superJump;
     private float lookRotation;
+    private bool grounded, inRange, GAActive;
+
+
+    void Start()
+    {
+        Cursor.lockState = CursorLockMode.Locked;    
+    }
+
+
+    private void FixedUpdate()
+    {
+        Move();
+    }
+
+    void LateUpdate()
+    {
+        Look();
+    }
+
 
     public void OnMove(InputAction.CallbackContext context)
     {
@@ -23,10 +42,9 @@ public class PlayerController : MonoBehaviour
         look = context.ReadValue<Vector2>();
     }
 
-    private void FixedUpdate()
+    public void OnJump(InputAction.CallbackContext context)
     {
-        Move();
-
+        Jump();
     }
 
     void Move()
@@ -42,22 +60,41 @@ public class PlayerController : MonoBehaviour
         // calculate change in velocity
         Vector3 velocityChange = newVelocity - currentVelocity;
 
+        // MAY NEED TO CHANGE TO GET GA/SUPER JUMP TO WORK
+        velocityChange = new Vector3(velocityChange.x, 0, velocityChange.z);
+
         // limit velocity
         Vector3.ClampMagnitude(velocityChange, maxVelocity);
 
         rb.AddForce(velocityChange, ForceMode.VelocityChange);
     }
 
-    void LateUpdate()
+    void Look()
     {
         // Turn horizontal
         transform.Rotate(Vector3.up * look.x * camSense);
 
         // Look
         lookRotation += (-look.y * camSense);
+        lookRotation = Mathf.Clamp(lookRotation, -90, 90);
         camHolder.transform.eulerAngles = new Vector3(lookRotation, camHolder.transform.eulerAngles.y, camHolder.transform.eulerAngles.z);
-
     }
 
+    void Jump()
+    {
+        Vector3 jumpVelocityCurr = Vector3.zero;
+
+        if (grounded)
+        {
+            jumpVelocityCurr = Vector3.up * jumpVelocity;
+        }
+
+        rb.AddForce(jumpVelocityCurr, ForceMode.VelocityChange);
+    }
+
+    public void SetGrounded(bool state)
+    {
+        grounded = state;
+    }
 
 }
