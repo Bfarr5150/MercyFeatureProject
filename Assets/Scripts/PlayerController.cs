@@ -33,7 +33,7 @@ public class PlayerController : MonoBehaviour
         input = new MercyInput();
 
         // Subscribe (+=) OnGuardianAngel to the 'performed' event. OnGuardianAngel method
-        // is triggered when the GuardianAngel action key ('context') is pressed
+        // is triggered when the GuardianAngel action key ('context') is pressed/performed
         input.Player.GuardianAngel.performed += context => OnGuardianAngel(context);
         Debug.Log("GAActive state: " + GAActive);
         Debug.Log("Ally in view: " + allyInFOV());
