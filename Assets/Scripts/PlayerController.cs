@@ -10,6 +10,7 @@ public class PlayerController : MonoBehaviour
     public Rigidbody rb;
     public GameObject camHolder;
     public GameObject ally;
+    private MercyInput input;
 
     // Base movement variables
     public float speed, camSense, maxVelocity, jumpVelocity;
@@ -29,6 +30,11 @@ public class PlayerController : MonoBehaviour
     void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
+        input = new MercyInput();
+
+        // Subscribe (+=) OnGuardianAngel to the 'performed' event. OnGuardianAngel method
+        // is triggered when the GuardianAngel action key ('context') is pressed
+        input.Player.GuardianAngel.performed += context => OnGuardianAngel(context);
         Debug.Log("GAActive state: " + GAActive);
         Debug.Log("Ally in view: " + allyInFOV());
 
@@ -46,16 +52,12 @@ public class PlayerController : MonoBehaviour
         {
             Debug.Log("Ally is in range");
         }
-        /*
-        if (!GAActive)
+        
+        // Check if player is currently flying
+        if (GAActive)
         {
-            if(allyInRange() && allyInFOV())
-            {
-                ActivateGA();
-                Debug.Log("GA activated");
-            }
+            CheckAllyReached();
         }
-        */
     }
 
     void LateUpdate()
@@ -177,6 +179,15 @@ public class PlayerController : MonoBehaviour
     bool allyInRange()
     {
         return Vector3.Distance(transform.position, ally.transform.position) <= allyInRangeThreshold;
+    }
+
+    // check to see if the player has reached their ally
+    void CheckAllyReached()
+    {
+        if (Vector3.Distance(transform.position, ally.transform.position) < GAEndThreshold)
+        {
+            GAActive = false;
+        }
     }
 
 
