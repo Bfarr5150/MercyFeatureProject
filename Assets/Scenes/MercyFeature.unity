@@ -1205,6 +1205,6 @@ MonoBehaviour:
   jumpVelocity: 3
   GASpeed: 8
   SuperJumpSpeed: 15
-  GAEndThreshold: 1
+  GAEndThreshold: 2
   allyInViewThreshold: 30
   allyInRangeThreshold: 15

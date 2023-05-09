@@ -38,6 +38,7 @@ public class PlayerController : MonoBehaviour
             // Same for SuperJump
         input.Player.GuardianAngel.performed += context => OnGuardianAngel(context);
         input.Player.SuperJump.performed += context => OnSuperJump(context);
+        Debug.Log("GAEndThreshold = " + GAEndThreshold);
 
     }
 
@@ -46,7 +47,8 @@ public class PlayerController : MonoBehaviour
     {
         Move();
         //CheckGACond();
-        
+        //Debug.Log("GA Status: " + GAActive);
+
         // Check if player is currently flying or Super Jumping
         if (GAActive)
         {
@@ -84,7 +86,7 @@ public class PlayerController : MonoBehaviour
         if (!GAActive && allyInFOV() && allyInRange() && context.performed)
         {
                 StartCoroutine(ActivateGASJ());
-                Debug.Log("GA activated");
+                Debug.Log("GA Status: " + GAActive);
         }        
     }
 
@@ -158,8 +160,10 @@ public class PlayerController : MonoBehaviour
 
         float GADistance = Vector3.Distance(startPos, endPos);
         float GADuration = GADistance / GASpeed;
-
         float GAFlyTime = 0f;
+
+        Debug.Log("GADistance = " + GADistance);
+
         while (GAFlyTime < GADuration && !superJumpActive)
         {
             rb.MovePosition(Vector3.Lerp(startPos, endPos, GAFlyTime / GADuration));
@@ -199,8 +203,10 @@ public class PlayerController : MonoBehaviour
     void CheckAllyReached()
     {
         if (Vector3.Distance(transform.position, ally.transform.position) < GAEndThreshold)
-        {
+        { 
             GAActive = false;
+            //rb.velocity = Vector3.zero;
+            Debug.Log("GAEndthreshold reached");
         }
     }
 
