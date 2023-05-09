@@ -23,6 +23,7 @@ public class PlayerController : MonoBehaviour
     public float GAEndThreshold = 0.5f;
     public float allyInViewThreshold = 30f;
     public float allyInRangeThreshold = 10f;
+    private bool superJumpActive = false;
     private bool GAActive = false;
 
 
@@ -34,9 +35,9 @@ public class PlayerController : MonoBehaviour
 
         // Subscribe (+=) OnGuardianAngel to the 'performed' event. OnGuardianAngel method
         // is triggered when the GuardianAngel action key ('context') is pressed/performed
+            // Same for SuperJump
         input.Player.GuardianAngel.performed += context => OnGuardianAngel(context);
-        Debug.Log("GAActive state: " + GAActive);
-        Debug.Log("Ally in view: " + allyInFOV());
+        input.Player.SuperJump.performed += context => OnSuperJump(context);
 
     }
 
@@ -44,11 +45,16 @@ public class PlayerController : MonoBehaviour
     private void FixedUpdate()
     {
         Move();
+        //CheckGACond();
         
-        // Check if player is currently flying
+        // Check if player is currently flying or Super Jumping
         if (GAActive)
         {
             CheckAllyReached();
+        }
+        else if (superJumpActive)
+        {
+            CheckSuperJump();
         }
     }
 
@@ -77,9 +83,17 @@ public class PlayerController : MonoBehaviour
     {
         if (!GAActive && allyInFOV() && allyInRange() && context.performed)
         {
-                StartCoroutine(ActivateGA());
+                StartCoroutine(ActivateGASJ());
                 Debug.Log("GA activated");
         }        
+    }
+
+    public void OnSuperJump(InputAction.CallbackContext context)
+    { 
+        if (GAActive)
+        {
+            superJumpActive = true;
+        }
     }
 
     void Move()
@@ -134,8 +148,8 @@ public class PlayerController : MonoBehaviour
         grounded = state;
     }
 
-    // Coroutine for Guardian Angel ability activation
-    IEnumerator ActivateGA()
+    // Coroutine for Guardian Angel/Super Jump ability activation
+    IEnumerator ActivateGASJ()
     {
         GAActive = true;
 
@@ -146,16 +160,24 @@ public class PlayerController : MonoBehaviour
         float GADuration = GADistance / GASpeed;
 
         float GAFlyTime = 0f;
-        while (GAFlyTime < GADuration)
+        while (GAFlyTime < GADuration && !superJumpActive)
         {
             rb.MovePosition(Vector3.Lerp(startPos, endPos, GAFlyTime / GADuration));
             GAFlyTime += Time.deltaTime;
             yield return null;
         }
 
-        rb.MovePosition(endPos);
+        if (superJumpActive)
+        {
+            rb.AddForce(Vector3.up * SuperJumpSpeed, ForceMode.VelocityChange);
+        }
+        else
+        {
+            rb.MovePosition(endPos);
+        }
 
         GAActive = false;
+        superJumpActive = false;
     }
 
     // Check for ally's position in player's FOV
@@ -179,6 +201,31 @@ public class PlayerController : MonoBehaviour
         if (Vector3.Distance(transform.position, ally.transform.position) < GAEndThreshold)
         {
             GAActive = false;
+        }
+    }
+
+    // check to see if player is using SuperJump
+    void CheckSuperJump()
+    {
+        if (rb.velocity.y <= 0f)
+        {
+            superJumpActive = false;
+        }
+    }
+
+
+
+
+
+
+
+
+    // print to console when GA is able to be activated
+    void CheckGACond()
+    {
+        if (allyInRange() && allyInFOV())
+        {
+            Debug.Log("GA Conditions Met!");
         }
     }
 
